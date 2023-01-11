@@ -1,4 +1,4 @@
-from entity.Users import UserProcess
+from entity.User.UserProcess import UserProcess
 from aiogram import types, Dispatcher
 from common_obj import bot
 from keyboards.client_kb import kb_start
