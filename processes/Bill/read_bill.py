@@ -26,11 +26,7 @@ async def choose_bill(message: types.Message, state: FSMContext):
     result = await Bill.get_bill(message)
 
     async with state.proxy() as data:
-        data['bill_id'] = result["bill_id"]
         data['bill_name'] = result["bill_name"]
-        data['acc_balance'] = float(result["acc_balance"])
-        data['is_calc_text'] = result["is_calc_text"]
-        data['is_not_calc'] = result["is_not_calc"]
 
     await FSMReadingBill.next()
     await bot.send_message(message.from_user.id,
@@ -54,6 +50,8 @@ async def choose_action(message: types.Message, state: FSMContext):
 
 
 def reg_processes_bill_read(dp: Dispatcher):
+    """Регистрация событий"""
+
     dp.register_message_handler(read_fsm_bill, state=None)
     dp.register_message_handler(cancel_read_bill, regexp='Отмена', state='*')
     dp.register_message_handler(choose_bill, state=FSMReadingBill.bill_name)

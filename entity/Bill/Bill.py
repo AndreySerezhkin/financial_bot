@@ -27,7 +27,7 @@ class Bill():
 
 
     @staticmethod
-    def check_exist_users_bill(user_bills: list, bill_name: str):
+    def check_exist_users_bill(user_bills: list, bill_name: str) -> bool:
         """Проверка существования счёта у пользователя"""
 
         for row in user_bills:
@@ -35,7 +35,7 @@ class Bill():
                 return True
 
     @staticmethod
-    def get_next_new_bill_id(user_bills: list):
+    def get_next_new_bill_id(user_bills: list) -> int:
         """Получение id для нового счёта """
         bill_id = 0
 
@@ -46,7 +46,7 @@ class Bill():
         return bill_id + 1
 
     @staticmethod
-    async def get_bill(message: types.Message):
+    async def get_bill(message: types.Message) -> dict:
         with Postgres() as (conn, cursor):
             cursor.execute(f""" SELECT *
                                 FROM bill
@@ -72,7 +72,7 @@ class Bill():
                 'is_not_calc': result['is_not_calc']}
 
     @staticmethod
-    async def create_bill_from_oth_proc(bot: Bot, message: types.Message):
+    async def create_bill_from_oth_proc(bot: Bot, message: types.Message) -> None:
         """Переход к созданию счёта из других процессов"""
 
         await bot.send_message(message.from_user.id,
@@ -83,7 +83,7 @@ class Bill():
 
 
     @staticmethod
-    async def send_user_bills_names(bot: Bot, message: types.Message, state, text: str):
+    async def send_user_bills_names(bot: Bot, message: types.Message, state, text: str) -> None:
         """Отправка списка названий счетов"""
 
         result = await Bill.get_user_bills(user_id=message.from_user.id)
@@ -99,3 +99,30 @@ class Bill():
                                    reply_markup=kb_read_bill)
         else:
             await Bill.create_bill_from_oth_proc(bot, message)
+
+    @staticmethod
+    def fill_data_by_param(data: dict, param: str, text: str) -> None:
+        if param == 'Название':
+
+            field = 'bill_name'
+            field_value = text
+
+        elif param == 'Баланс счёта':
+
+            field = 'acc_balance'
+            field_value = int(float(text) * 100)
+
+        elif param == 'Учёт в общем балансе':
+            field = 'is_calc_text'
+            if text == 'Да':
+                field_value = 'Учитывается в общем балансе'
+            else:
+                field_value = 'Не учитывается в общем балансе'
+            data[field] = field_value
+
+            field = 'is_not_calc'
+            field_value = False if text == 'Да' else True
+
+        data[field] = field_value
+
+        return field, field_value

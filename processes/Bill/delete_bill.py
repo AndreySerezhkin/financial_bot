@@ -16,7 +16,8 @@ class FSMDeletingBill(StatesGroup):
 
 
 async def delete_fsm_bill(message: types.Message):
-    await Bill.get_all_user_bills(bot, message, FSMDeletingBill.bill_name, 'Какой счёт удалим?')
+    """Начало процесса Удаления счёта"""
+    await Bill.send_user_bills_names(bot, message, FSMDeletingBill.bill_name, 'Какой счёт удалим?')
 
 
 async def cancel_delete_bill(message: types.Message, state: FSMContext):
@@ -24,7 +25,7 @@ async def cancel_delete_bill(message: types.Message, state: FSMContext):
 
 
 async def delete_bill(message: types.Message, state: FSMContext):
-
+    """Удаление выбранного счёта"""
     with Postgres() as (conn, cursor):
         cursor.execute(f""" DELETE FROM bill
                             WHERE bill_name = '{message.text}'
@@ -39,6 +40,7 @@ async def delete_bill(message: types.Message, state: FSMContext):
 
 
 async def choose_action(message: types.Message, state: FSMContext):
+    """Переход к выбранному дальнейшему действию"""
     await state.finish()
     if message.text == 'Удалить еще':
         await delete_fsm_bill(message)
@@ -47,6 +49,8 @@ async def choose_action(message: types.Message, state: FSMContext):
 
 
 def reg_processes_bill_delete(dp: Dispatcher):
+    """Регистрация событий"""
+    
     dp.register_message_handler(delete_fsm_bill, state=None)
     dp.register_message_handler(cancel_delete_bill, regexp='Отмена', state='*')
     dp.register_message_handler(delete_bill, state=FSMDeletingBill.bill_name)

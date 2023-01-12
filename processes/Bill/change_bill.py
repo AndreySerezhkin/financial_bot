@@ -27,6 +27,7 @@ async def cancel_change_bill(message: types.Message, state: FSMContext):
 
 
 async def choose_bill(message: types.Message, state: FSMContext):
+    """Получение счёта"""
     result = await Bill.get_bill(message)
 
     async with state.proxy() as data:
@@ -46,6 +47,7 @@ async def choose_bill(message: types.Message, state: FSMContext):
 
 
 async def choose_param(message: types.Message, state: FSMContext):
+    """Выбор параметра для изменения"""
     await FSMChangingBill.next()
 
     async with state.proxy() as data:
@@ -60,31 +62,13 @@ async def choose_param(message: types.Message, state: FSMContext):
 
 
 async def set_new_param(message: types.Message, state: FSMContext):
+    """Изменение параметра счёта в таблице"""
+
     async with state.proxy() as data:
         param = data['param']
         bill_id = data['bill_id']
 
-        if param == 'Название':
-            field = 'bill_name'
-            field_value = message.text
-        elif param == 'Баланс счёта':
-            field = 'acc_balance'
-            field_value = int(float(message.text) * 100)
-        elif param == 'Учёт в общем балансе':
-            field = 'is_calc_text'
-            if message.text == 'Да':
-                field_value = 'Учитывается в общем балансе'
-            else:
-                field_value = 'Не учитывается в общем балансе'
-            data[field] = field_value
-
-            field = 'is_not_calc'
-            if message.text == 'Да':
-                field_value = False
-            else:
-                field_value = True
-
-        data[field] = field_value
+        field, field_value = Bill.fill_data_by_param(data, param, message.text)
 
     with Postgres() as (conn, cursor):
         cursor.execute(f"""UPDATE bill
@@ -100,6 +84,7 @@ async def set_new_param(message: types.Message, state: FSMContext):
 
 
 async def choose_action(message: types.Message, state: FSMContext):
+    """Переход к выбранному дальнейшему действию"""
     
     if message.text == 'Изменить этот же счёт':
         async with state.proxy() as data:
@@ -120,6 +105,8 @@ async def choose_action(message: types.Message, state: FSMContext):
 
 
 def reg_processes_bill_change(dp: Dispatcher):
+    """Регистрация событий"""
+
     dp.register_message_handler(change_fsm_bill, state=None)
     dp.register_message_handler(cancel_change_bill, regexp='Отмена', state='*')
     dp.register_message_handler(choose_bill, state=FSMChangingBill.bill_name)

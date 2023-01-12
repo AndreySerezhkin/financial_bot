@@ -17,6 +17,7 @@ class FSMCreationBill(StatesGroup):
 
 
 async def create_fsm_bill(message: types.Message):
+    """Начало процесса создания счёта, спрашиваем название"""
     await FSMCreationBill.bill_name.set()
     await bot.send_message(message.from_user.id,
                            'Название счета',
@@ -65,22 +66,20 @@ async def write_accbalance(message: types.Message, state: FSMContext):
 async def write_isnotcalc(message: types.Message, state: FSMContext):
     """Запись учёта счёта в общем балансе"""
 
+    not_calc = False if message.text == 'Да' else True
+
     async with state.proxy() as data:
-        if message.text == 'Да':
-            data['is_not_calc'] = False
-        else:
-            data['is_not_calc'] = True
 
-    with Postgres() as (conn, cursor):
-        db.insert('bill', {'bill_name': data['bill_name'],
-                           'bill_id': data['bill_id'],
-                           'acc_balance': data['acc_balance'],
-                           'is_not_calc': data['is_not_calc'],
-                           'user_id': message.from_user.id},
-                  cursor=cursor, conn=conn)
+        with Postgres() as (conn, cursor):
+            db.insert('bill', {'bill_name': data['bill_name'],
+                            'bill_id': data['bill_id'],
+                            'acc_balance': data['acc_balance'],
+                            'is_not_calc': not_calc,
+                            'user_id': message.from_user.id},
+                    cursor=cursor, conn=conn)
 
-        await bot.send_message(message.from_user.id,
-                               f"Готово! Счёт '{data['bill_name']}' создан")
+            await bot.send_message(message.from_user.id,
+                                f"Готово! Счёт '{data['bill_name']}' создан")
 
     await common_handlers.to_start(message=message, state=state)
 
