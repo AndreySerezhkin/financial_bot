@@ -40,8 +40,7 @@ btn_summ = KeyboardButton('Сумма')
 kb_choose_param = ReplyKeyboardMarkup(resize_keyboard=True,
                                       one_time_keyboard=True)
 
-kb_date.add(btn_cat, btn_bill, btn_date, btn_type, btn_summ)
-
+kb_choose_param.add(btn_cat, btn_bill, btn_date, btn_type, btn_summ)
 
 but_create = KeyboardButton('Создать')
 but_change = KeyboardButton('Изменить')

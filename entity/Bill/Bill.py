@@ -19,9 +19,11 @@ class Bill():
                          WHERE user_id = {user_id} ;"""
             cursor.execute(query)
 
-            logger.info(f'Select from user bills: {cursor.fetchall()}')
+            
+            result = cursor.fetchall()
+            logger.info(f'Select from user bills: {result}')
 
-            return cursor.fetchall()
+        return result
 
 
     @staticmethod
@@ -41,7 +43,7 @@ class Bill():
             if bill_id < row['bill_id']:
                 bill_id = row['bill_id']
 
-        return bill_id
+        return bill_id + 1
 
     @staticmethod
     async def get_bill(message: types.Message):
@@ -54,19 +56,20 @@ class Bill():
             result = cursor.fetchall()[0]
             logger.info(f'select from user bill names: {result}')
 
-        acc_balance = float(result['acc_balance'] / 100)
+        acc_balance = float(result['acc_balance'])
         logger.info(f'acc_balance: {acc_balance}')
 
         if result['is_not_calc']:
-            is_calc = 'Не учитывается в общем балансе'
+            is_calc_text = 'Не учитывается в общем балансе'
         else:
-            is_calc = 'Учитывается в общем балансе'
+            is_calc_text = 'Учитывается в общем балансе'
 
 
         return {'bill_id': result['bill_id'],
                 'bill_name': result['bill_name'],
                 'acc_balance': acc_balance,
-                'is_calc': is_calc}
+                'is_calc_text': is_calc_text,
+                'is_not_calc': result['is_not_calc']}
 
     @staticmethod
     async def create_bill_from_oth_proc(bot: Bot, message: types.Message):

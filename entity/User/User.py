@@ -11,10 +11,10 @@ class User():
 
         with Postgres() as (con, cursor):
             query = f""" SELECT *
-                        FROM bill
+                        FROM users
                         WHERE user_id = {user_id} ;"""
             cursor.execute(query)
 
-            return cursor.fetchall()
+            return cursor.fetchall()[0]
 
     

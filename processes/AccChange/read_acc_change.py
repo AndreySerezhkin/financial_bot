@@ -6,6 +6,7 @@ from loguru import logger
 from aiogram_calendar import dialog_cal_callback, DialogCalendar
 from decimal import Decimal
 
+from entity.AccChange.AccChange import AccChange
 from database import Postgres
 from common_obj import dp, bot
 from processes import common_handlers
@@ -17,7 +18,7 @@ class FSMReadingAccChange(StatesGroup):
     date_read = State()
     action= State()
 
-async def show_fsm_acc_change(user_id, acc_change):
+async def read_fsm_acc_change(user_id, acc_change):
     await FSMReadingAccChange.action.set()
 
     await bot.send_message(f"""{acc_change['type_change']}: {acc_change['amount']:.2f}
@@ -28,14 +29,14 @@ async def show_fsm_acc_change(user_id, acc_change):
                                             .replace("  ", "").replace("\n ", "\n"),
                                         reply_markup=acc_change_kb.kb_choose_act)
 
-    await (user_id, f"""Запись удалена.\nЧто дальше""", reply_markup=acc_change_kb.kb_choose_act)
+
+# async def choose_action(message: types.Message, state: FSMContext):
+#     AccChange.choose_action(message, state)
 
 
 def reg_processes_acc_change_read(dp: Dispatcher):
-    dp.register_message_handler(show_fsm_acc_change, state=None)
-    dp.register_message_handler(cancel_create, regexp='Отмена', state='*')
-    dp.register_message_handler(set_type, state=FSMReadingAccChange.type)
-    dp.register_message_handler(choose_action, state=FSMReadingAccChange.action)
+    dp.register_message_handler(read_fsm_acc_change, state=None)
+
 
 # async with state.proxy() as data:
     #     data['date'] = result['record_date']

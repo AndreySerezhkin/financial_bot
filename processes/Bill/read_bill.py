@@ -15,7 +15,7 @@ class FSMReadingBill(StatesGroup):
 
 
 async def read_fsm_bill(message: types.Message):
-    await Bill.get_all_user_bills(bot, message, FSMReadingBill.bill_name, 'Какой счёт посмотрим?')
+    await Bill.send_user_bills_names(bot, message, FSMReadingBill.bill_name, 'Какой счёт посмотрим?')
 
 async def cancel_read_bill(message: types.Message, state: FSMContext):
     await common_handlers.cancel_process(message=message, state=state)
@@ -28,14 +28,15 @@ async def choose_bill(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['bill_id'] = result["bill_id"]
         data['bill_name'] = result["bill_name"]
-        data['acc_balance'] = float(result["acc_balance"] / 100)
-        data['is_calc'] = result["is_calc"]
+        data['acc_balance'] = float(result["acc_balance"])
+        data['is_calc_text'] = result["is_calc_text"]
+        data['is_not_calc'] = result["is_not_calc"]
 
     await FSMReadingBill.next()
     await bot.send_message(message.from_user.id,
                            (f"""Название: {result["bill_name"]}
-                            Баланс: {result["acc_balance"]:.2f}
-                            {result["is_calc"]}""".replace("  ", "")),
+                            Баланс: {result["acc_balance"]/100:.2f}
+                            {result["is_calc_text"]}""".replace("  ", "")),
                            reply_markup=kb_action_bill)
 
 

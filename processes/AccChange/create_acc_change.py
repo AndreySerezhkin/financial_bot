@@ -74,7 +74,7 @@ async def set_type(message: types.Message, state: FSMContext):
 
         data['type_name'] = message.text
 
-    await Bill.get_all_user_bills(bot, message, FSMCreationAccChange.bill, 'Выбери счёт')
+    await Bill.send_user_bills_names(bot, message, FSMCreationAccChange.bill, 'Выбери счёт')
 
 
 async def set_bill(message: types.Message, state: FSMContext):

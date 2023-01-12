@@ -32,14 +32,15 @@ async def choose_bill(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
         data['bill_id'] = result["bill_id"]
         data['bill_name'] = result["bill_name"]
-        data['acc_balance'] = float(result["acc_balance"] / 100)
-        data['is_calc'] = result["is_calc"]
+        data['acc_balance'] = float(result["acc_balance"])
+        data['is_calc_text'] = result["is_calc_text"]
+        data['is_not_calc'] = result["is_not_calc"]
 
     await FSMChangingBill.next()
     await bot.send_message(message.from_user.id,
                            f"""Название: {result["bill_name"]}
-                               Баланс: {result["acc_balance"]}
-                               {result["is_calc"]}\n
+                               Баланс: {result["acc_balance"]/100:.2f}
+                               {result["is_calc_text"]}\n
                                Что будем менять?""".replace('  ', '').replace('\n ','\n'),
                            reply_markup=bill_kb.kb_params_bill)
 
@@ -70,6 +71,13 @@ async def set_new_param(message: types.Message, state: FSMContext):
             field = 'acc_balance'
             field_value = int(float(message.text) * 100)
         elif param == 'Учёт в общем балансе':
+            field = 'is_calc_text'
+            if message.text == 'Да':
+                field_value = 'Учитывается в общем балансе'
+            else:
+                field_value = 'Не учитывается в общем балансе'
+            data[field] = field_value
+
             field = 'is_not_calc'
             if message.text == 'Да':
                 field_value = False
@@ -99,8 +107,8 @@ async def choose_action(message: types.Message, state: FSMContext):
             await FSMChangingBill.param.set()
             await bot.send_message(message.from_user.id,
                                    f"""Название: {data["bill_name"]}
-                                       Баланс: {data["acc_balance"]:.2f}
-                                       {data["is_calc"]}\n
+                                       Баланс: {data["acc_balance"]/100:.2f}
+                                       {data["is_calc_text"]}\n
                                        Что будем менять?""".replace("  ", "").replace("\n ", "\n"),
                                    reply_markup=bill_kb.kb_params_bill)
     elif message.text == 'Изменить другой счёт':

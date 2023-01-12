@@ -14,7 +14,7 @@ class FSMAction(StatesGroup):
     actions = State()
 
 
-async def start_fsm_action(message: types.Message, user_name):
+async def start_fsm_action(message: types.Message, user_name: str):
     """Вывод Сущностей с которыми можно работать"""
 
     await FSMAction.entity.set()

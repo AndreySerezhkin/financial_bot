@@ -29,10 +29,10 @@ async def delete_fsm_acc_change(user_id, acc_change_id):
     await bot.send_message(user_id, f"""Запись удалена.\nЧто дальше""", reply_markup=acc_change_kb.kb_choose_act)
 
 
-async def choose_action(message: types.Message, state: FSMContext):
-    AccChange.choose_action(message, state)
+# async def choose_action(message: types.Message, state: FSMContext):
+#     AccChange.choose_action(message, state)
     
 
 def reg_processes_acc_change_delete(dp: Dispatcher):
     dp.register_message_handler(delete_fsm_acc_change, state=None)
-    dp.register_message_handler(choose_action, state=FSMRDeletingAccChange.action)
+    # dp.register_message_handler(choose_action, state=FSMRDeletingAccChange.action)
