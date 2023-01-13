@@ -1,6 +1,6 @@
-from entity.Bill.BillProcess import BillProcess
-from entity.AccChange.AccChangeProcess import AccChangeProcess
-from entity.Category.CategoryProcess import CategoryProcess
+from bill.router_processes import BillProcess
+from accChange.route_processes import AccChangeProcess
+from category.router_processes import CategoryProcess
 from entity.Entity import EntityProcess
 
 

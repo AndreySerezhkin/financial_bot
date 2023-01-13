@@ -1,4 +1,1 @@
-from entity.Bill.BillProcess import BillProcess
-from entity.Category.CategoryProcess import CategoryProcess
-from database.Postgres import Postgres
-from entity import EntityFabrica
+from .entity_process import reg_processes_client
