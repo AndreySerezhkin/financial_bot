@@ -74,3 +74,16 @@ class Category():
 
             exist_category = False
             return exist_category
+        
+    @staticmethod
+    async def get_cat_id_by_name(cat_name: str, user_id: types.base.Integer) -> dict:
+        with Postgres() as (conn, cursor):
+            cursor.execute(f""" SELECT *
+                                FROM category
+                                WHERE cat_name = '{cat_name}'
+                                  AND user_id = {user_id};""")
+
+            result = cursor.fetchall()[0]
+            logger.info(f'select from user cat names: {result}')
+
+        return result['cat_id']

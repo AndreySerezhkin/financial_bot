@@ -29,7 +29,8 @@ async def cancel_change_bill(message: types.Message, state: FSMContext):
 
 async def choose_bill(message: types.Message, state: FSMContext):
     """Получение информации о счёте"""
-    result = await Bill.get_bill(message)
+    result = await Bill.get_bill_info_by_name(bill_name=message.text,
+                                              user_id=message.from_user.id)
 
     async with state.proxy() as data:
         data['bill_id'] = result["bill_id"]

@@ -77,8 +77,8 @@ async def output_acc(callback_query: types.CallbackQuery, state: FSMContext):
 
     acc_change_id = int(callback_query.data.replace('acc', ''))
 
-    acc_change_info = AccChange.get_acc_change_info(user_id=callback_query.from_user.id,
-                                           acc_change_id=acc_change_id)
+    acc_change_info = dict(AccChange.get_acc_change_info(user_id=callback_query.from_user.id,
+                                                    acc_change_id=acc_change_id))
 
     if acc_change_info['type'] == 'e':
         acc_change_info['type_change'] = 'Расход'
@@ -94,7 +94,7 @@ async def output_acc(callback_query: types.CallbackQuery, state: FSMContext):
             await read_acc_change.read_fsm_acc_change(callback_query.from_user.id, acc_change_info)
 
         elif 'change' in data['action']:
-            await change_acc_change.change_fsm_acc_change(callback_query.from_user.id, acc_change_info)
+            await change_acc_change.change_fsm_acc_change(callback_query.from_user.id, acc_change_info, state)
 
         elif 'delete' in data['action']:
             await delete_acc_change.delete_fsm_acc_change(callback_query.from_user.id, acc_change_id)

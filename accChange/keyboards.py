@@ -2,7 +2,7 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
 
 btn_cancel = KeyboardButton('Отмена')
 
-# buttons when changing the balance
+# Кнопки для типа изменения счёта
 btn_expense = KeyboardButton('Расход')
 btn_income = KeyboardButton('Доход')
 
@@ -11,7 +11,7 @@ kb_acc_change = ReplyKeyboardMarkup(resize_keyboard=True,
 
 kb_acc_change.add(btn_expense, btn_income).row(btn_cancel)
 
-# buttons when changing the balance
+# Кнопки для получения даты
 btn_today = KeyboardButton('Сегодня')
 btn_yesterday = KeyboardButton('Вчера')
 btn_oth_date = KeyboardButton('Другая дата')
@@ -30,7 +30,7 @@ kb_end_acc_change = ReplyKeyboardMarkup(resize_keyboard=True,
 kb_end_acc_change.add(btn_expense, btn_income).row(btn_oth_date).row(but_return)
 
 
-# buttons when changing the balance
+# Кнопки для изменения отдельного расхода либо дохода
 btn_cat = KeyboardButton('Категория')
 btn_bill = KeyboardButton('Счёт')
 btn_date = KeyboardButton('Дата')
@@ -54,6 +54,7 @@ kb_choose_act.row(but_create, but_change).row(but_delete, but_show).row(but_canc
 
 
 def generate_action_kb(type) -> ReplyKeyboardMarkup:
+    """Генерирует кнопки в зависимости от типа изменения счёта в котором находимся"""
 
     if type == 'e':
         btn_expense = KeyboardButton('Другой Расход')

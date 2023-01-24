@@ -79,7 +79,8 @@ async def set_type(message: types.Message, state: FSMContext):
 
 async def set_bill(message: types.Message, state: FSMContext):
 
-    result = await Bill.get_bill(message)
+    result = await Bill.get_bill_info_by_name(bill_name=message.text,
+                                              user_id=message.from_user.id)
 
     async with state.proxy() as data:
         data['bill_id'] = result["bill_id"]

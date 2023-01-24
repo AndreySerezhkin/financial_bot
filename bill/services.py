@@ -45,12 +45,12 @@ class Bill():
         return bill_id + 1
 
     @staticmethod
-    async def get_bill(message: types.Message) -> dict:
+    async def get_bill_info_by_name(bill_name: str, user_id: types.base.Integer) -> dict:
         with Postgres() as (conn, cursor):
             cursor.execute(f""" SELECT *
                                 FROM bill
-                                WHERE bill_name = '{message.text}'
-                                  AND user_id = {message.from_user.id};""")
+                                WHERE bill_name = '{bill_name}'
+                                  AND user_id = {user_id};""")
 
             result = cursor.fetchall()[0]
             logger.info(f'select from user bill names: {result}')
